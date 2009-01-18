@@ -4,7 +4,7 @@ namespace :extjs do
   
   desc "Concatenates JS files into one called solitaire-all.js"
   task :concatenate do
-    files = ["ApiViewport.js", "ApiPanel.js", "DocPanel.js", "MainPanel.js", "Selectbox.js", "SearchField.js", "TabCloseMenu.js", "Initialize.js"]
+    files = ["ApiViewport", "ApiPanel", "DocPanel", "MainPanel", "Selectbox", "SearchField", "TabCloseMenu", "Initialize", "DocData"]
     concatenated_filename = "docs/resources/javascripts/apidocs-all.js"
     
     #remove old files, create blank ones again
@@ -13,7 +13,7 @@ namespace :extjs do
     
     file = File.open(concatenated_filename, 'w') do |f|
       files.each do |i|
-        f.puts(IO.read("docs/resources/javascripts/#{i}"))
+        f.puts(IO.read("docs/resources/javascripts/#{i}.js"))
         f.puts("\n")
       end
     end
@@ -24,7 +24,7 @@ namespace :extjs do
     minified_filename = "docs/resources/javascripts/apidocs-all-min.js"
     FileUtils.rm(minified_filename) if File.exists?(minified_filename)
     
-    system("java -jar ../yui-compressor/build/yuicompressor-2.4.jar javascripts/solitaire/solitaire-all.js -o #{minified_filename}")
+    system("java -jar ../yui-compressor/build/yuicompressor-2.4.jar docs/resources/javascripts/apidocs-all.js -o #{minified_filename}")
   end
   
   desc "Prepares site for deployment (concatenates and minifies js code)"
