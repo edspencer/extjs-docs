@@ -3,8 +3,10 @@ DocPanel = Ext.extend(Ext.Panel, {
   autoScroll: true,
 
   initComponent : function(){
-    var ps = this.cclass.split('.');
-    this.title = ps[ps.length-1];
+    if (this.cclass) {
+      var ps = this.cclass.split('.');
+      this.title = ps[ps.length-1];
+    };
 
     DocPanel.superclass.initComponent.call(this);
   },
