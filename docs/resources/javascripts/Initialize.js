@@ -53,5 +53,3 @@ Ext.Ajax.on('requestcomplete', function(ajax, xhr, o){
     urchinTracker(o.url);
   }
 });
-
-var boo;
