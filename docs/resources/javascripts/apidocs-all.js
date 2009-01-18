@@ -794,7 +794,7 @@ Ext.BLANK_IMAGE_URL = 'resources/images/s.gif';
 Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
 
 Ext.onReady(function() {
-  // Ext.QuickTips.init();
+  Ext.QuickTips.init();
   
   //create Ext.History elements
   Ext.getBody().createChild({  
