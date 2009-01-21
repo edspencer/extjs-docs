@@ -21,8 +21,9 @@ ApiViewport = function(config) {
             e.stopEvent();
             
             //turns "output/Some.Class.Name.html" into "Some.Class.Name"
-            var cls = String.format("class={0}", node.attributes.href.replace("output/", "").replace(".html", ""));
-            Ext.History.add(cls);
+            var hash = String.format("{0}", node.attributes.href.replace("output/", "").replace(".html", ""));
+            
+            Ext.History.add(hash);
           };
         }
       }
@@ -135,25 +136,27 @@ Ext.extend(ApiViewport, Ext.Viewport, {
   initComponent: function() {
     
     Ext.History.on('change', function(token) {
-      //maintain backwards compatibility with non-History managed direct links
-      //e.g. ?class=Some.Class redirects to #class=Some.Class
-      if (document.location.search) {
-        var loc = String.prototype.split.call(document.location, "?")[0];
-        document.location = String.format("{0}#{1}", loc, document.location.search.replace("?", ""));
-        return;
-      }
-
+      console.log(token);
+      
       if (token) {
-        var ps = Ext.urlDecode(token);
-        this.mainPanel.loadClass('output/' + ps['class'] + '.html', ps['class'], ps.member);
+        // Split the token up into the class and member if specified
+        var cls =    token.split('/')[0];
+        var member = token.split('/')[1] || false;
+        
+        this.mainPanel.loadClass('output/' + cls + '.html', cls, member);
       };
     }, this);
     
     ApiViewport.superclass.initComponent.apply(this, arguments);
     
-    //fire a History change event to load up a class if specified in the url
-    var hash = document.location.hash.replace("#", "");
-    Ext.History.fireEvent('change', hash);
+    // Check if there is a hash in the URL so we can fire off a Ext.History
+    // change.
+    if (document.location.hash) {
+      var hash = document.location.hash.replace("#", "");
+      
+      // Fire off the event
+      Ext.History.fireEvent('change', hash);
+    };
   },
   
   hiddenPkgs: [],
@@ -406,7 +409,8 @@ Ext.extend(MainPanel, Ext.TabPanel, {
     this.on('tabchange', function(tabPanel, tab) {
       var matchData;
       if (matchData = this.tabClassRegex.exec(tab.id)) {
-        Ext.History.add(String.format("class={0}", matchData[1]));
+        // Add the history URL when clicking a method on the main panel
+        // Ext.History.add(String.format("{0}", matchData[1]));
       };
     }, this);
   },
@@ -417,11 +421,21 @@ Ext.extend(MainPanel, Ext.TabPanel, {
       e.stopEvent();
       if(cls){
         var member = Ext.fly(target).getAttributeNS('ext', 'member');
-        this.loadClass(target.href, cls, member);
+        
+        if (member) {
+          member = "/" + member;
+        } else {
+          member = '';
+        }
+        
+        // Add to the history when clicking a search result
+        var hash = cls + member;
+        Ext.History.add(hash);
       }else if(target.className == 'inner-link'){
         this.getActiveTab().scrollToSection(target.href.split('#')[1]);
       }else{
-        window.open(target.href);
+        console.log('href');
+        // console.log(target.href);
       }
     }else if(target = e.getTarget('.micon', 2)){
       e.stopEvent();
